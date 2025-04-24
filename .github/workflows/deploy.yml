@@ -1,0 +1,36 @@
+name: Deploy via rsync over SSH (no build)
+
+on:
+  push:
+    branches:
+      # mainブランチにプッシュされたときにトリガーされる
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # GitHubが用意したUbuntuの最新環境でジョブを実行
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3 # リポジトリのコードをチェックアウト（取得）
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3 # SSHエージェントを起動し、秘密鍵を使えるようにする
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }} # GitHub Secretsに登録したSSH秘密鍵を使用
+
+      - name: Add SSH host key
+        run: |
+          mkdir -p ~/.ssh  # SSH設定フォルダを作成（すでにあってもOK）
+          ssh-keyscan -H ${{ secrets.SAKURA_SSH_HOST }} >> ~/.ssh/known_hosts  # 接続先サーバーのホスト鍵を登録（警告回避のため）
+
+      - name: Deploy with rsync
+        run: |
+          rsync -avz --delete \  # ファイルを圧縮して差分転送（削除オプション付き）
+          --exclude=".git/" \  # Git管理ファイルを除外
+          --exclude=".github/" \  # GitHub設定ファイルを除外
+          --exclude=".DS_Store" \  # macOSの隠しファイルを除外
+          --exclude="README.md" \  # READMEファイルを除外
+          --exclude=".htaccess/" \  # .htaccessファイルを除外（必要に応じて）
+          --exclude=".htpasswd/" \  # .htpasswdファイルを除外（必要に応じて）
+          ./ ${{ secrets.SAKURA_SSH_USER }}@${{ secrets.SAKURA_SSH_HOST }}:${{ vars.SAKURA_DEPLOY_PATH }}/actions-test/  # distの中身をサーバーへアップロード
