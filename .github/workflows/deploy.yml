@@ -33,4 +33,4 @@ jobs:
             --exclude="README.md" \
             --exclude=".htaccess" \
             --exclude=".htpasswd" \
-            ./ ${{ secrets.SAKURA_SSH_USER }}@${{ secrets.SAKURA_SSH_HOST }}:${{ vars.SAKURA_DEPLOY_PATH }}/actions-test/
+            ./ ${{ secrets.SAKURA_SSH_USER }}@${{ secrets.SAKURA_SSH_HOST }}:${{ vars.SAKURA_DEPLOY_PATH }}
