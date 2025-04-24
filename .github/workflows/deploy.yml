@@ -31,6 +31,6 @@ jobs:
           --exclude=".github/" \  # GitHub設定ファイルを除外
           --exclude=".DS_Store" \  # macOSの隠しファイルを除外
           --exclude="README.md" \  # READMEファイルを除外
-          --exclude=".htaccess/" \  # .htaccessファイルを除外（必要に応じて）
-          --exclude=".htpasswd/" \  # .htpasswdファイルを除外（必要に応じて）
-          ./ ${{ secrets.SAKURA_SSH_USER }}@${{ secrets.SAKURA_SSH_HOST }}:${{ vars.SAKURA_DEPLOY_PATH }}/actions-test/  # distの中身をサーバーへアップロード
+          --exclude=".htaccess" \  # .htaccessファイルを除外（必要に応じて）
+          --exclude=".htpasswd" \  # .htpasswdファイルを除外（必要に応じて）
+          ./ ${{ secrets.SAKURA_SSH_USER }}@${{ secrets.SAKURA_SSH_HOST }}:${{ vars.SAKURA_DEPLOY_PATH }}/actions-test/  # サーバーへアップロード
