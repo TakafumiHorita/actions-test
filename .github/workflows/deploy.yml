@@ -24,5 +24,5 @@ jobs:
           mkdir -p ~/.ssh  # SSH設定フォルダを作成（すでにあってもOK）
           ssh-keyscan -H ${{ secrets.SAKURA_SSH_HOST }} >> ~/.ssh/known_hosts  # 接続先サーバーのホスト鍵を登録（警告回避のため）
 
-- name: Deploy with rsync
-  run: rsync -avz --delete --exclude=".git/" --exclude=".github/" --exclude=".DS_Store" --exclude="README.md" --exclude=".htaccess" --exclude=".htpasswd" ./ ${{ secrets.SAKURA_SSH_USER }}@${{ secrets.SAKURA_SSH_HOST }}:${{ vars.SAKURA_DEPLOY_PATH }}/actions-test/
+      - name: Deploy with rsync
+        run: rsync -avz --delete --exclude=".git/" --exclude=".github/" --exclude=".DS_Store" --exclude="README.md" --exclude=".htaccess" --exclude=".htpasswd" ./ ${{ secrets.SAKURA_SSH_USER }}@${{ secrets.SAKURA_SSH_HOST }}:${{ vars.SAKURA_DEPLOY_PATH }}/actions-test/
