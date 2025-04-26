@@ -22,7 +22,7 @@ jobs:
       - name: Add SSH host key
         run: |
           mkdir -p ~/.ssh  # SSH設定フォルダを作成（すでにあってもOK）
-          ssh-keyscan -H ${{ secrets.SAKURA_SSH_HOST }} >> ~/.ssh/known_hosts  # 接続先サーバーのホスト鍵を登録（警告回避のため）
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts  # 接続先サーバーのホスト鍵を登録（警告回避のため）
 
       - name: Deploy with rsync
         run: |
@@ -33,4 +33,4 @@ jobs:
             --exclude="README.md" \
             --exclude=".htaccess" \
             --exclude=".htpasswd" \
-            ./ ${{ secrets.SAKURA_SSH_USER }}@${{ secrets.SAKURA_SSH_HOST }}:${{ vars.SAKURA_DEPLOY_PATH }}
+            ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ vars.DEPLOY_PATH }}
