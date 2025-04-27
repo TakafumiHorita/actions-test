@@ -1,28 +1,32 @@
-name: Deploy via rsync over SSH (no build)
+name: deploy to remote
 
 on:
   push:
     branches:
-      # mainブランチにプッシュされたときにトリガーされる
       - main
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest # GitHubが用意したUbuntuの最新環境でジョブを実行
+    runs-on: ubuntu-latest
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_PORT: ${{ secrets.SSH_PORT }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3 # リポジトリのコードをチェックアウト（取得）
+        uses: actions/checkout@v3
 
       - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.5.3 # SSHエージェントを起動し、秘密鍵を使えるようにする
+        uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }} # GitHub Secretsに登録したSSH秘密鍵を使用
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Add SSH host key
         run: |
-          mkdir -p ~/.ssh  # SSH設定フォルダを作成（すでにあってもOK）
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts  # 接続先サーバーのホスト鍵を登録（警告回避のため）
+          mkdir -p ~/.ssh
+          ssh-keyscan -H -p $SSH_PORT $SSH_HOST >> ~/.ssh/known_hosts
 
       - name: Deploy with rsync
         run: |
@@ -33,4 +37,5 @@ jobs:
             --exclude="README.md" \
             --exclude=".htaccess" \
             --exclude=".htpasswd" \
-            ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ vars.DEPLOY_PATH }}
+            -e "ssh -p $SSH_PORT" \
+            ./ $SSH_USER@$SSH_HOST:$DEPLOY_PATH
